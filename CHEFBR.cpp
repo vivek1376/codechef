@@ -9,7 +9,8 @@ int main()
 {
     int N,i=0,j,p,q,r,m,n,o;
     int A[100];
-
+    int modBase=1000000007;
+    long long int pr=0;
     cin>>N;
 
     int dp[100][100]={0};
@@ -19,8 +20,8 @@ int main()
 	cin>>A[i++];
 
     // print
-    for(j=0;j<i;j++)
-	cout<<A[j]<<endl;
+//    for(j=0;j<i;j++)
+//	cout<<A[j]<<endl;
 
     // build map of element and list of positions for each element
     unordered_map<int,vector<int> > occurences;
@@ -38,7 +39,7 @@ int main()
     }
 
     vector<int>::iterator iVec;
-
+/*
     for(iMap=occurences.begin();iMap!=occurences.end();++iMap)
     {
 	cout<<iMap->first<<" : ";
@@ -46,7 +47,7 @@ int main()
 	    cout<<*iVec<<" ";
 
 	cout<<endl;
-    }
+	}*/
 //        unordered_map<int, vector<int> >::key_type num=4; //d
 //    cout<<dp[22][43]<<endl;//d
 
@@ -66,14 +67,22 @@ int main()
 		    // iterate over all positions which fall in range
 		    if(*iVec>=i && *iVec<j)
 			if(*iVec==0)
-			    dp[i][j]+=((1+dp[0][0])*(dp[1][j-1]+1));
+			{
+			    pr=((1+dp[0][0])*(dp[1][j-1]+1))%modBase;
+			    dp[i][j]=(dp[i][j]+pr)%modBase;
+//			    dp[i][j]+=((1+dp[0][0])*(dp[1][j-1]+1));
+			}
 			else
-			    dp[i][j]+=((1+dp[i][*iVec-1])*(dp[*iVec+1][j-1]+1));
+			{
+			    pr=((1+dp[i][*iVec-1])*(dp[*iVec+1][j-1]+1))%modBase;
+			    dp[i][j]=(dp[i][j]+pr)%modBase;
+//			    dp[i][j]+=((1+dp[i][*iVec-1])*(dp[*iVec+1][j-1]+1));
+			}
 	    }
 //	    j=i+p;
 	}
     }
-    cout<<endl<<dp[0][N-1]<<endl;
+    cout<<(dp[0][N-1]+1)%modBase<<endl;
 
     
     return 0;
