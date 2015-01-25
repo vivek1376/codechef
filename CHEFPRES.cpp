@@ -170,7 +170,7 @@ int Graph::returnCapacity()
 
 vector <list <Node> >::reference Graph::getElement(int n)
 {
-    return this->g.at(n-1);
+    return this->g[n-1];
 }
 
 void Graph::addEdge(int v, int w)
@@ -188,7 +188,6 @@ void Node::setVal(int val)
 {
     this->val=val;
 }
-
 
 void Graph::DFS(int v)
 {
@@ -241,7 +240,7 @@ void Graph::DFS(int v)
 
 int Graph::getDistance(int v, int w)
 {
-    return this->distance.at(v)[w-1]; /* at() ?? */
+    return this->distance[v][w-1]; /* at() ?? */
 }
 
 void Graph::setDistance(int v, int w, int dist)
@@ -259,18 +258,18 @@ void Graph::printVisited(int v)
 {
     for(int i=1;i<=this->V;i++)
 	cout<<"v["<<i<<"]: "
-	    <<(this->visited.at(v)[i-1]?"+":"-")<<endl;
+	    <<(this->visited[v][i-1]?"+":"-")<<endl;
 }
 
 void Graph::printDistances(int v)
 {
     for(int i=1;i<=this->V;i++)
-	cout<<"d["<<i<<"]: "<<this->distance.at(v)[i-1]<<endl;
+	cout<<"d["<<i<<"]: "<<this->distance[v][i-1]<<endl;
 }
 
 bool Graph::ifVisited(int v, int node)
 {
-    return this->visited.at(v)[node-1]; /* correct behaviour if 
+    return this->visited[v][node-1]; /* correct behaviour if 
 					v not present ?? 
 					use (at) ?? */
 }
