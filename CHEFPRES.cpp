@@ -51,7 +51,7 @@ public:
 
 int main()
 {
-    int N,K,B,i,j,k,v,m,n,x,y,Nq;
+    int N,K,B,i,m,n,x,y,Nq;
     cin>>N>>K;
     cin>>B;
 
@@ -99,11 +99,9 @@ int main()
 
 	/* multiple city choices */
 	myGraph.DFS(m);		/* DFS from chef's city */
-
 	
 	int d,p=numeric_limits<int>::min(),maxCityD=numeric_limits<int>::min();
 	int minL=numeric_limits<int>::max(), maxCity=numeric_limits<int>::max();
-//	cout<<"B: "<<B<<endl;//d
 	
 	/* iterate all product cities */
 	for(vector<int>::iterator iVec=pCities[n].begin();
@@ -248,7 +246,7 @@ void Graph::DFS(int v)
 
 int Graph::getDistance(int v, int w)
 {
-    return this->distance[v][w-1]; /* at() ?? */
+    return this->distance.at(v)[w-1]; /* at() ?? */
 }
 
 void Graph::setDistance(int v, int w, int dist)
@@ -277,7 +275,7 @@ void Graph::printDistances(int v)
 
 bool Graph::ifVisited(int v, int node)
 {
-    return this->visited[v][node-1]; /* correct behaviour if 
+    return this->visited.at(v)[node-1]; /* correct behaviour if 
 					v not present ?? 
 					use (at) ?? */
 }
