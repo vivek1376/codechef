@@ -1,11 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include <map>
 #include <stack>
 #include <limits>
+#include <unordered_map>
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
+
 using namespace std;
 
 class Node{
@@ -24,13 +25,13 @@ class Graph{
 private:
     int V;
     vector <list <Node> > g;
-    map <int, vector <bool> > visited; /* each element stores a 
-					  particular DFS instance
-					  result */
-    map <int, vector <int> > distance; /* distances from a starting
-					  vertex */
-    map <int, map <int, int> > parent; /* store parent node
-					  for each DFS instance*/
+    unordered_map <int, vector <bool> > visited; /* each element stores a 
+						    particular DFS instance
+						    result */
+    unordered_map <int, vector <int> > distance; /* distances from a starting
+						    vertex */
+    unordered_map <int, unordered_map <int, int> > parent; /* store parent node
+							      for each DFS instance*/
 public:
     Graph(int V);
     void DFS(int v);
@@ -65,8 +66,8 @@ int main()
 	myGraph.addEdge(x,y);
     }
 
-    map<int,int> F;
-    map <int, vector <int> > pCities;
+    unordered_map <int,int> F;
+    unordered_map <int, vector <int> > pCities;
     for(i=0;i<N;i++)
     {
 	cin>>m;
@@ -76,9 +77,7 @@ int main()
 
     cin>>Nq;			/* no of queries */
 
-    /* run DFS from capital B */
     myGraph.DFS(B);		/* DFS from capital */
-    
     
     for(i=0;i<Nq;i++)
     {
@@ -100,16 +99,18 @@ int main()
 	/* multiple city choices */
 	myGraph.DFS(m);		/* DFS from chef's city */
 	
-	int d,p=numeric_limits<int>::min(),maxCityD=numeric_limits<int>::min();
-	int minL=numeric_limits<int>::max(), maxCity=numeric_limits<int>::max();
+	int d,
+	    p=numeric_limits<int>::min(),
+	    maxCityD=numeric_limits<int>::min(),
+	    minL=numeric_limits<int>::max(), 
+	    maxCity=numeric_limits<int>::max();
 	
 	/* iterate all product cities */
 	for(vector<int>::iterator iVec=pCities[n].begin();
 	    iVec!=pCities[n].end(); ++iVec)
 	{
-	    p=-1;
+	    p=-1,d=*iVec;
 	    minL=numeric_limits<int>::max();  /* initialize */
-	    d=*iVec;
 	    minL=MIN(minL,myGraph.getDistance(B,d));
 	    while(p!=m)
 	    {
@@ -129,12 +130,6 @@ int main()
 	}
 	cout<<maxCity<<endl;//??OK
     }
-
-/*
-    myGraph.DFS(1);
-    myGraph.printVisited(1);
-    myGraph.printDistances(1);
-    myGraph.printPath(1,6);*/
 }
 
 Node::Node()
