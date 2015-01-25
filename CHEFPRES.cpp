@@ -36,7 +36,10 @@ public:
     void markVisited(int v, int node);
     void setDistance(int v,int w , int dist);
     int getDistance(int v, int w);
+    void initDistance(int v);
     bool ifVisited(int v, int node);
+    void printVisited(int v);
+    void printDistances(int v);
     list <Node>::iterator returnList(int node);
 };
 
@@ -69,14 +72,13 @@ int main()
     //  cout<<endl<<sizeof(myGraph);
 //    cout << endl<<"no of elements "<<myG. //d
 
-    for(i=1;i<=N;i++)
-      cout<<"visited("<< i << "): " << myGraph.ifVisited(1,i) << endl;
+/*    for(i=1;i<=N;i++)
+      cout<<"visited("<< i << "): " << myGraph.ifVisited(1,i) << endl;*/
 
     /* run DFS */
     myGraph.DFS(1);    
-
-    for(i=1;i<=N;i++)
-	cout<<"visited("<< i << "): " << myGraph.ifVisited(1,i) << endl;
+    myGraph.printVisited(1);
+    myGraph.printDistances(1);
 }
 
 Node::Node()
@@ -116,6 +118,7 @@ void Node::setVal(int val)
     this->val=val;
 }
 
+
 void Graph::DFS(int v)
 {
 //    vector <bool> visited(this->V);
@@ -126,12 +129,14 @@ void Graph::DFS(int v)
     this->visited.insert(make_pair(v,vector <bool> (this->V,false))); //check
     int w,dist=0;
 
+    initDistance(v);
     stack <int> S;    
 
-    this->distance[v].resize(this->V); /* here OK?? */
-    /* mark v visited */
+//    this->distance[v].resize(this->V); /* here OK?? */
+    /* mark v visited,
+       why not pushing into stack ?? */
     this->markVisited(v,v);
-    cout<<"visited: "<<v<<endl;//d
+    //cout<<"visited: "<<v<<endl;//d
     this->setDistance(v,v,dist);
     
     list<Node>::iterator iList;
@@ -142,7 +147,7 @@ void Graph::DFS(int v)
     {
 	this->markVisited(v,iList->getVal());
 	this->setDistance(v,iList->getVal(),dist);
-	cout<<"visited: "<<iList->getVal()<<endl;//d
+//	cout<<"visited: "<<iList->getVal()<<endl;//d
 	S.push(iList->getVal());
     }
 
@@ -160,26 +165,45 @@ void Graph::DFS(int v)
 //		cout<<"dist:"<<dist<<endl;//d
 		this->markVisited(v,iList->getVal());
 		this->setDistance(v,iList->getVal(),dist);
-		cout<<"visited: "<<iList->getVal()<<endl;//d
+//		cout<<"visited: "<<iList->getVal()<<endl;//d
 		S.push(iList->getVal());
 	    }
 	}
     }
-    int i;
+    /*   int i;
     for(i=1;i<=this->V;i++)//d
-	cout<<"distance("<<i<<"): "<<this->getDistance(1,i)<<endl;
+    cout<<"distance("<<i<<"): "<<this->getDistance(1,i)<<endl;*/
 }
 
 int Graph::getDistance(int v, int w)
 {
-    return distance[v][w-1];
+    return this->distance[v][w-1];
 }
 
 void Graph::setDistance(int v, int w, int dist)
 {
 //    cout<<"setD()"<<endl;//vector not allocated
-    distance[v][w-1]=dist;
+    this->distance[v][w-1]=dist;
 //    cout<<"~setD()"<<endl;
+}
+
+void Graph::initDistance(int v)
+{
+    this->distance[v].resize(this->V); /* here OK?? */
+    this->distance[v].assign(this->distance[v].size(),-1);
+}
+ 
+void Graph::printVisited(int v)
+{
+    for(int i=1;i<=this->V;i++)
+	cout<<"v("<<i<<"): "
+	    <<(this->visited.at(v)[i-1]?"+":"-")<<endl;
+}
+
+void Graph::printDistances(int v)
+{
+    for(int i=1;i<=this->V;i++)
+	cout<<"d("<<i<<"): "<<this->distance.at(v)[i-1]<<endl;
 }
 
 bool Graph::ifVisited(int v, int node)
