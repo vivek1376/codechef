@@ -4,9 +4,10 @@ using namespace std;
 
 int main()
 {
-    int T,N,K,i,j,k,bMask,bMax,newMask;
-    unsigned long long int sum,X,S[22];
+    int T,N,K,i,j,k;
+    unsigned long long int sum,X,S[22],bMask,bMax,newMask;
     char **dp;
+
     cin>>T;
     
     while(T--)
@@ -19,13 +20,14 @@ int main()
 	    cin>>S[i++];
 	    sum+=S[i-1];
 	}
-	
+
 	if(sum%K)
 	{
 	    cout<<"no"<<endl;
 	    continue;
 	}
 
+	// required sum of each subset
 	X=sum/K;
 
 	bMax=(1<<N)-1;
