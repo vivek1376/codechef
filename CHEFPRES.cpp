@@ -48,7 +48,7 @@ int main()
 //    check map;
 /*    map <int, char > mm;
       cout<<"map: "<<mm.at(2)<<endl;*/
-    int N,K,B,i,j,k,v,w,x,y;
+    int N,K,B,i,j,k,v,m,n,x,y,Nq;
     cin>>N>>K;
     cin>>B;
 
@@ -62,12 +62,26 @@ int main()
 	myGraph.addEdge(x,y);
     }
 
-    i=N;
-/*    while(i--)
+    vector<int> F(N);
+    for(i=0;i<N;i++)
     {
-	
-    }*/
+	cin>>F[i];
+    }
 
+    cin>>Nq;
+
+    vector <pair <int, int> > Q(Nq);
+    for(i=0;i<Nq;i++)
+    {
+	cin>>m>>n;
+	Q[i].first=m;
+	Q[i].second=n;
+
+	/* solution */
+    }
+    
+    //cout<<Q[3].second;//d
+//    cout<<Q[
 //    cout<<myG.returnCapacity();//d
     //  cout<<endl<<sizeof(myGraph);
 //    cout << endl<<"no of elements "<<myG. //d
@@ -196,14 +210,14 @@ void Graph::initDistance(int v)
 void Graph::printVisited(int v)
 {
     for(int i=1;i<=this->V;i++)
-	cout<<"v("<<i<<"): "
+	cout<<"v["<<i<<"]: "
 	    <<(this->visited.at(v)[i-1]?"+":"-")<<endl;
 }
 
 void Graph::printDistances(int v)
 {
     for(int i=1;i<=this->V;i++)
-	cout<<"d("<<i<<"): "<<this->distance.at(v)[i-1]<<endl;
+	cout<<"d["<<i<<"]: "<<this->distance.at(v)[i-1]<<endl;
 }
 
 bool Graph::ifVisited(int v, int node)
