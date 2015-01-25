@@ -27,9 +27,11 @@ private:
 					  result */
     map <int, vector <int> > distance; /* distances from a starting
 					  vertex */
+    map <int, map <int, int> > parent; /* store parent node
+					  for each DFS instance*/
 public:
     Graph(int V);
-    void DFS(int v);
+    void DFS(int v, int d);
     int returnCapacity();
     void addEdge(int v, int w);
     vector <list <Node> >::reference getElement(int n);
@@ -40,6 +42,7 @@ public:
     bool ifVisited(int v, int node);
     void printVisited(int v);
     void printDistances(int v);
+    void printPath(int v, int d);
     list <Node>::iterator returnList(int node);
 };
 
@@ -63,9 +66,12 @@ int main()
     }
 
     vector<int> F(N);
+    map <int, vector <int> > cities;
     for(i=0;i<N;i++)
     {
-	cin>>F[i];
+	cin>>m;
+	F[i]=m;
+	cities[m].push_back(i+1);
     }
 
     cin>>Nq;
@@ -74,10 +80,20 @@ int main()
     for(i=0;i<Nq;i++)
     {
 	cin>>m>>n;
-	Q[i].first=m;
-	Q[i].second=n;
+	Q[i].first=m;		/* chef's city */
+	Q[i].second=n;		/* product needed */
 
 	/* solution */
+	if(cities.find(n)==cities.end())
+	    cout<<"-1"<<endl;
+	else if(cities[n].size()==1)
+	{
+	    //cout<<cities[n][0]<<endl;
+	    continue;
+	}
+
+	/* multiple city choices */
+	
     }
     
     //cout<<Q[3].second;//d
@@ -90,14 +106,31 @@ int main()
       cout<<"visited("<< i << "): " << myGraph.ifVisited(1,i) << endl;*/
 
     /* run DFS */
-    myGraph.DFS(1);    
+    myGraph.DFS(1,5);    
     myGraph.printVisited(1);
     myGraph.printDistances(1);
+    myGraph.printPath(1,6);
 }
 
 Node::Node()
 {
     this->visited=0;
+}
+
+void Graph::printPath(int v, int d)
+{
+//    cout<<this->parent<<endl;
+    /* add checking */
+    int p=-1;
+
+    cout<<"path: "<<d;
+    while(p!=v)
+    {
+	p=this->parent[v][d];
+	d=p;
+	cout<<" "<<d;
+    }
+    cout <<endl;
 }
 
 Graph::Graph(int V)
@@ -133,7 +166,7 @@ void Node::setVal(int val)
 }
 
 
-void Graph::DFS(int v)
+void Graph::DFS(int v, int d)
 {
 //    vector <bool> visited(this->V);
     //  visited.assign(visited.size(),false); /* initialize */
@@ -150,6 +183,7 @@ void Graph::DFS(int v)
     /* mark v visited,
        why not pushing into stack ?? */
     this->markVisited(v,v);
+    this->parent[v][v]=v;	/* origin */
     //cout<<"visited: "<<v<<endl;//d
     this->setDistance(v,v,dist);
     
@@ -161,6 +195,7 @@ void Graph::DFS(int v)
     {
 	this->markVisited(v,iList->getVal());
 	this->setDistance(v,iList->getVal(),dist);
+	this->parent[v][iList->getVal()]=v;
 //	cout<<"visited: "<<iList->getVal()<<endl;//d
 	S.push(iList->getVal());
     }
@@ -179,6 +214,7 @@ void Graph::DFS(int v)
 //		cout<<"dist:"<<dist<<endl;//d
 		this->markVisited(v,iList->getVal());
 		this->setDistance(v,iList->getVal(),dist);
+		this->parent[v][iList->getVal()]=w;
 //		cout<<"visited: "<<iList->getVal()<<endl;//d
 		S.push(iList->getVal());
 	    }
