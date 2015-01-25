@@ -3,7 +3,9 @@
 #include <list>
 #include <map>
 #include <stack>
+#include <limits>
 
+#define MIN(x,y) ((x)<(y)?(x):(y))
 using namespace std;
 
 class Node{
@@ -31,13 +33,14 @@ private:
 					  for each DFS instance*/
 public:
     Graph(int V);
-    void DFS(int v, int d);
+    void DFS(int v);
     int returnCapacity();
     void addEdge(int v, int w);
     vector <list <Node> >::reference getElement(int n);
     void markVisited(int v, int node);
     void setDistance(int v,int w , int dist);
     int getDistance(int v, int w);
+    int getParent(int v, int w);
     void initDistance(int v);
     bool ifVisited(int v, int node);
     void printVisited(int v);
@@ -56,7 +59,7 @@ int main()
     cin>>B;
 
     Graph myGraph(N);    
-    cout<<"hell"<<endl;
+//    cout<<"hell"<<endl;
     i=N-1;
 
     while(i--)
@@ -65,36 +68,89 @@ int main()
 	myGraph.addEdge(x,y);
     }
 
-    vector<int> F(N);
-    map <int, vector <int> > cities;
+    map<int,int> F;
+    map <int, vector <int> > pCities;
     for(i=0;i<N;i++)
     {
 	cin>>m;
-	F[i]=m;
-	cities[m].push_back(i+1);
+	F[i+1]=m;		/* map city with product */
+	pCities[m].push_back(i+1);
     }
 
-    cin>>Nq;
+    cin>>Nq;			/* no of queries */
 
-    vector <pair <int, int> > Q(Nq);
+    /* run DFS from capital B */
+    myGraph.DFS(B);		/* DFS from capital */
+    
+    
     for(i=0;i<Nq;i++)
     {
 	cin>>m>>n;
-	Q[i].first=m;		/* chef's city */
-	Q[i].second=n;		/* product needed */
 
-	/* solution */
-	if(cities.find(n)==cities.end())
-	    cout<<"-1"<<endl;
-	else if(cities[n].size()==1)
+	/* no city */
+	if(pCities.find(n)==pCities.end())
 	{
-	    //cout<<cities[n][0]<<endl;
+	    cout<<"-1"<<endl;
 	    continue;
 	}
+	else if(pCities[n].size()==1)
+	{			/* product found in only one city */
+	    cout<<pCities[n][0]<<endl;
+	    continue;
+	}
+	// if own city ??
 
 	/* multiple city choices */
+	myGraph.DFS(m);		/* DFS from chef's city */
+
 	
+	int d,p=numeric_limits<int>::min(),maxCityD=numeric_limits<int>::min();
+	int minL=numeric_limits<int>::max(), maxCity=numeric_limits<int>::max();
+//	cout<<"B: "<<B<<endl;//d
+	
+	/* iterate all product cities */
+	for(vector<int>::iterator iVec=pCities[n].begin();
+	    iVec!=pCities[n].end(); ++iVec)
+	{
+//	    maxC
+	    p=-1;
+//	    cout<<"iteration"<<endl;//d
+//	    maxCity=-1;		/* no city found */
+	    minL=numeric_limits<int>::max();  /* initialize */
+	    d=*iVec;
+//	    cout<<"d"<<d<<endl;//d
+//	    cout<<"iVec"<<*iVec<<endl;//d
+	    minL=MIN(minL,myGraph.getDistance(B,d));
+//	    cout<<"dist"<<myGraph.getDistance(B,d)<<endl;//d
+	    while(p!=m)
+	    {
+		p=myGraph.getParent(m,d);
+		d=p;
+//		cout<<"d"<<d<<endl;//d
+		minL=MIN(minL,myGraph.getDistance(B,d));
+//		cout<<"dist"<<myGraph.getDistance(B,d)<<endl;//d
+	    }
+//	    cout<<"minLxx"<<minL<<"mcityd"<<maxCityD<<endl;//d
+
+	    /* max city */
+	    if (minL>maxCityD)
+	    {
+//		cout<<"qqq";//d
+		maxCityD=minL;
+//		cout<<"maxCityD"<<maxCityD<<endl;//d
+		maxCity=*iVec;
+//		cout<<"maxCity"<<maxCity<<endl;//d
+	    }
+	    else if (maxCityD==minL)
+	    {
+//		cout<<"qqqq";//d
+		maxCity=MIN(maxCity,*iVec);
+//		cout<<"maxCity"<<maxCity<<endl;//d
+	    }
+	}
+	cout<<maxCity<<endl;//??OK
     }
+
     
     //cout<<Q[3].second;//d
 //    cout<<Q[
@@ -106,7 +162,7 @@ int main()
       cout<<"visited("<< i << "): " << myGraph.ifVisited(1,i) << endl;*/
 
     /* run DFS */
-    myGraph.DFS(1,5);    
+    myGraph.DFS(1);
     myGraph.printVisited(1);
     myGraph.printDistances(1);
     myGraph.printPath(1,6);
@@ -115,6 +171,11 @@ int main()
 Node::Node()
 {
     this->visited=0;
+}
+
+int Graph::getParent(int v, int w)
+{
+    return this->parent[v][w];
 }
 
 void Graph::printPath(int v, int d)
@@ -166,13 +227,16 @@ void Node::setVal(int val)
 }
 
 
-void Graph::DFS(int v, int d)
+void Graph::DFS(int v)//, int d)
 {
 //    vector <bool> visited(this->V);
     //  visited.assign(visited.size(),false); /* initialize */
     
 //    vector <int> distance(this->V);
 //    this->visited[v].push_back(true);//d
+    if(this->visited.find(v)!=this->visited.end()) /* important!! */
+	return;
+
     this->visited.insert(make_pair(v,vector <bool> (this->V,false))); //check
     int w,dist=0;
 
@@ -227,7 +291,7 @@ void Graph::DFS(int v, int d)
 
 int Graph::getDistance(int v, int w)
 {
-    return this->distance[v][w-1];
+    return this->distance[v][w-1]; /* at() ?? */
 }
 
 void Graph::setDistance(int v, int w, int dist)
