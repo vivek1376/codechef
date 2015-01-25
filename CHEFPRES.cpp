@@ -34,6 +34,8 @@ public:
     void addEdge(int v, int w);
     vector <list <Node> >::reference getElement(int n);
     void markVisited(int v, int node);
+    void setDistance(int v,int w , int dist);
+    int getDistance(int v, int w);
     bool ifVisited(int v, int node);
     list <Node>::iterator returnList(int node);
 };
@@ -50,6 +52,7 @@ int main()
     Graph myGraph(N);    
     cout<<"hell"<<endl;
     i=N-1;
+
     while(i--)
     {
 	cin>>x>>y;
@@ -121,36 +124,62 @@ void Graph::DFS(int v)
 //    vector <int> distance(this->V);
 //    this->visited[v].push_back(true);//d
     this->visited.insert(make_pair(v,vector <bool> (this->V,false))); //check
-    int w;
+    int w,dist=0;
 
     stack <int> S;    
 
-
+    this->distance[v].resize(this->V); /* here OK?? */
     /* mark v visited */
     this->markVisited(v,v);
-
+    cout<<"visited: "<<v<<endl;//d
+    this->setDistance(v,v,dist);
+    
     list<Node>::iterator iList;
 
     /* push all nodes adjacent to v onto S */
-    for(iList=this->getElement(v).begin(); 
+    for(iList=this->getElement(v).begin(), ++dist; /* increment dist by 1 */
 	iList!=this->getElement(v).end(); ++iList)
+    {
+	this->markVisited(v,iList->getVal());
+	this->setDistance(v,iList->getVal(),dist);
+	cout<<"visited: "<<iList->getVal()<<endl;//d
 	S.push(iList->getVal());
+    }
 
     while(!S.empty())
     {
 	w=S.top();
 	S.pop();
+	dist=getDistance(v,w);	/* OK?? */
 	
-	for(iList=this->getElement(w).begin(); 
+	for(iList=this->getElement(w).begin(),++dist; 
 	    iList!=this->getElement(w).end(); ++iList)
 	{
 	    if(this->ifVisited(v,iList->getVal())==false)
 	    {
+//		cout<<"dist:"<<dist<<endl;//d
 		this->markVisited(v,iList->getVal());
+		this->setDistance(v,iList->getVal(),dist);
+		cout<<"visited: "<<iList->getVal()<<endl;//d
 		S.push(iList->getVal());
 	    }
 	}
     }
+    int i;
+    for(i=1;i<=this->V;i++)//d
+	cout<<"distance("<<i<<"): "<<this->getDistance(1,i)<<endl;
+}
+
+int Graph::getDistance(int v, int w)
+{
+    return distance[v][w-1];
+}
+
+void Graph::setDistance(int v, int w, int dist)
+{
+//    cout<<"setD()"<<endl;//vector not allocated
+    distance[v][w-1]=dist;
+//    cout<<"~setD()"<<endl;
 }
 
 bool Graph::ifVisited(int v, int node)
