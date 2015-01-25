@@ -51,15 +51,12 @@ public:
 
 int main()
 {
-//    check map;
-/*    map <int, char > mm;
-      cout<<"map: "<<mm.at(2)<<endl;*/
     int N,K,B,i,j,k,v,m,n,x,y,Nq;
     cin>>N>>K;
     cin>>B;
 
     Graph myGraph(N);    
-//    cout<<"hell"<<endl;
+
     i=N-1;
 
     while(i--)
@@ -112,60 +109,34 @@ int main()
 	for(vector<int>::iterator iVec=pCities[n].begin();
 	    iVec!=pCities[n].end(); ++iVec)
 	{
-//	    maxC
 	    p=-1;
-//	    cout<<"iteration"<<endl;//d
-//	    maxCity=-1;		/* no city found */
 	    minL=numeric_limits<int>::max();  /* initialize */
 	    d=*iVec;
-//	    cout<<"d"<<d<<endl;//d
-//	    cout<<"iVec"<<*iVec<<endl;//d
 	    minL=MIN(minL,myGraph.getDistance(B,d));
-//	    cout<<"dist"<<myGraph.getDistance(B,d)<<endl;//d
 	    while(p!=m)
 	    {
 		p=myGraph.getParent(m,d);
 		d=p;
-//		cout<<"d"<<d<<endl;//d
 		minL=MIN(minL,myGraph.getDistance(B,d));
-//		cout<<"dist"<<myGraph.getDistance(B,d)<<endl;//d
 	    }
-//	    cout<<"minLxx"<<minL<<"mcityd"<<maxCityD<<endl;//d
 
 	    /* max city */
 	    if (minL>maxCityD)
 	    {
-//		cout<<"qqq";//d
 		maxCityD=minL;
-//		cout<<"maxCityD"<<maxCityD<<endl;//d
 		maxCity=*iVec;
-//		cout<<"maxCity"<<maxCity<<endl;//d
 	    }
 	    else if (maxCityD==minL)
-	    {
-//		cout<<"qqqq";//d
 		maxCity=MIN(maxCity,*iVec);
-//		cout<<"maxCity"<<maxCity<<endl;//d
-	    }
 	}
 	cout<<maxCity<<endl;//??OK
     }
 
-    
-    //cout<<Q[3].second;//d
-//    cout<<Q[
-//    cout<<myG.returnCapacity();//d
-    //  cout<<endl<<sizeof(myGraph);
-//    cout << endl<<"no of elements "<<myG. //d
-
-/*    for(i=1;i<=N;i++)
-      cout<<"visited("<< i << "): " << myGraph.ifVisited(1,i) << endl;*/
-
-    /* run DFS */
+/*
     myGraph.DFS(1);
     myGraph.printVisited(1);
     myGraph.printDistances(1);
-    myGraph.printPath(1,6);
+    myGraph.printPath(1,6);*/
 }
 
 Node::Node()
@@ -180,7 +151,6 @@ int Graph::getParent(int v, int w)
 
 void Graph::printPath(int v, int d)
 {
-//    cout<<this->parent<<endl;
     /* add checking */
     int p=-1;
 
@@ -227,13 +197,8 @@ void Node::setVal(int val)
 }
 
 
-void Graph::DFS(int v)//, int d)
+void Graph::DFS(int v)
 {
-//    vector <bool> visited(this->V);
-    //  visited.assign(visited.size(),false); /* initialize */
-    
-//    vector <int> distance(this->V);
-//    this->visited[v].push_back(true);//d
     if(this->visited.find(v)!=this->visited.end()) /* important!! */
 	return;
 
@@ -243,12 +208,10 @@ void Graph::DFS(int v)//, int d)
     initDistance(v);
     stack <int> S;    
 
-//    this->distance[v].resize(this->V); /* here OK?? */
     /* mark v visited,
        why not pushing into stack ?? */
     this->markVisited(v,v);
     this->parent[v][v]=v;	/* origin */
-    //cout<<"visited: "<<v<<endl;//d
     this->setDistance(v,v,dist);
     
     list<Node>::iterator iList;
@@ -260,7 +223,6 @@ void Graph::DFS(int v)//, int d)
 	this->markVisited(v,iList->getVal());
 	this->setDistance(v,iList->getVal(),dist);
 	this->parent[v][iList->getVal()]=v;
-//	cout<<"visited: "<<iList->getVal()<<endl;//d
 	S.push(iList->getVal());
     }
 
@@ -275,18 +237,13 @@ void Graph::DFS(int v)//, int d)
 	{
 	    if(this->ifVisited(v,iList->getVal())==false)
 	    {
-//		cout<<"dist:"<<dist<<endl;//d
 		this->markVisited(v,iList->getVal());
 		this->setDistance(v,iList->getVal(),dist);
 		this->parent[v][iList->getVal()]=w;
-//		cout<<"visited: "<<iList->getVal()<<endl;//d
 		S.push(iList->getVal());
 	    }
 	}
     }
-    /*   int i;
-    for(i=1;i<=this->V;i++)//d
-    cout<<"distance("<<i<<"): "<<this->getDistance(1,i)<<endl;*/
 }
 
 int Graph::getDistance(int v, int w)
@@ -296,9 +253,7 @@ int Graph::getDistance(int v, int w)
 
 void Graph::setDistance(int v, int w, int dist)
 {
-//    cout<<"setD()"<<endl;//vector not allocated
     this->distance[v][w-1]=dist;
-//    cout<<"~setD()"<<endl;
 }
 
 void Graph::initDistance(int v)
