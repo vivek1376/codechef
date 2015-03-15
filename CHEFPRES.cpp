@@ -1,3 +1,4 @@
+// vivek < vivek.1376(at)gmail.com >
 #include <iostream>
 #include <vector>
 #include <list>
@@ -15,7 +16,7 @@ private:
     char visited;
     /* map for dfs from each vertex */
 public:
-    Node();
+    Node();	    
     void setVal (int val);
     int getVal();
     bool ifVisited();
@@ -23,19 +24,24 @@ public:
 
 class Graph {
 private:
-    int V;			/* root */
-    vector <list <Node> > g;
+    int V;			/* no of nodes */
+    vector <list <Node> > g;	// adjacency list representation
     unordered_map <int, vector <bool> > visited; /* each element stores a
 						    particular DFS instance
-						    result */
-    unordered_map <int, vector <int> > distance; /* distances from a starting
-						    vertex */
+						    result from a particular 
+						    root node */
+    unordered_map <int, vector <int> > distance; /* distances from the root
+						    node */
     unordered_map <int, unordered_map <int, int> > parent; /* store parent node
-							      for each DFS instance*/
+							      for each DFS instance
+							      from a particular root 
+							      node */
 
-    /* store min node in subtree having product p (under
+    /* store min node in subtree having product F(i)=p (under
        a particular root node) */
-    unordered_map <int, vector <unordered_map<int , int > > > minSubtree;
+    unordered_map <int, vector <unordered_map <int , int > > > minSubtree;
+
+    /* map city with product */
     unordered_map <int ,int> cProduct;
 public:
     Graph (int V);
@@ -81,13 +87,16 @@ int main()
     {
         cin >> m;
 	myGraph.setProduct(i+1,m);
-        //F[i + 1] = m;		/* map city with product */
+        //F[i + 1] = m;
+
+	/* store list of cities for each product */
         pCities[m].push_back (i + 1);
     }
 
     cin >> Nq;			/* no of queries */
 
     myGraph.DFS (B);		/* DFS from capital */
+
     cout<<"dp"<<myGraph.getMinSubtree(B,7)<<endl;
     for (i = 0; i < Nq; i++)
     {
@@ -206,7 +215,8 @@ int Graph::getMinSubtree(int root, int v)
 
 void Graph::DFS (int v)
 {
-    if (this->visited.find (v) != this->visited.end()) /* important!! */
+    /* important!! if DFS already run from this node, return */
+    if (this->visited.find (v) != this->visited.end()) 
         return;
     
 //    this->minSubtree.insert(make_pair(this->V,make_pair(
@@ -233,17 +243,22 @@ void Graph::DFS (int v)
             iList != this->getElement (v).end(); ++iList)
     {
         this->markVisited (v, iList->getVal());
+
+	// 'dist' distance from 'v'
         this->setDistance (v, iList->getVal(), dist);
+	
         this->parent[v][iList->getVal()] = v;
 	setMinSubtree(v,iList->getVal());
         S.push (iList->getVal());
     }
 
+    // S contains list of unexplored nodes
     while (!S.empty())
     {
         w = S.top();
         S.pop();
-        dist = getDistance (v, w);	/* OK?? */
+
+        dist = getDistance (v, w);	/* reset dist. OK?? */
 
         for (iList = this->getElement (w).begin(), ++dist;
                 iList != this->getElement (w).end(); ++iList)
@@ -270,28 +285,39 @@ void Graph::setDistance (int v, int w, int dist)
     this->distance[v][w - 1] = dist;
 }
 
+/* set v as min node for product F(v) in v's parent nodes, if v is smaller
+   that those nodes' previous min value for F(v) */
 void Graph::setMinSubtree(int root, int v)
 {
+    int product=this->cProduct[v];
     int city=v;
+
+    // update all the parent nodes if city v is smaller than the
+    // parent nodes' minSubtree value (for v's product)
     while (this->parent[root][city]!=root)
     {
-	if (minSubtree[root][city-1].find(this->cProduct[city])==
+	/* check if the parent node has a minSubtree value for 'product' */
+	if(minSubtree[root][city-1].find(product)==
+	   minSubtree[root][city-1].end())
+	    this->minSubtree[root][city-1][product]=v;
+	else if (minSubtree[root][city-1][product] > v)
+	    this->minSubtree[root][city-1][product]=v;
+
+	/*	if (minSubtree[root][city-1].find(this->cProduct[city])==
 	    minSubtree[root][city-1].end())
 	    this->minSubtree[root][city-1][this->cProduct[city]]=v;
 	else if (minSubtree[root][city-1][this->cProduct[city]] > v)
-	    this->minSubtree[root][city-1][this->cProduct[city]]=v;
+	this->minSubtree[root][city-1][this->cProduct[city]]=v;*/
 	
 	city=getParent(root,city);
     }
     
     /* for root */
-    if (minSubtree[root][city-1].find(this->cProduct[city])==
+    if (minSubtree[root][city-1].find(product)==
 	minSubtree[root][city-1].end())
-	this->minSubtree[root][city-1][this->cProduct[city]]=v;
-    else if (minSubtree[root][city-1][this->cProduct[city]] >
-	     v)
-	this->minSubtree[root][city-1][this->cProduct[city]]=v;
-	
+	this->minSubtree[root][city-1][product]=v;
+    else if (minSubtree[root][city-1][product] > v)
+	this->minSubtree[root][city-1][product]=v;
 }
 
 void Graph::setProduct(int v, int p)
