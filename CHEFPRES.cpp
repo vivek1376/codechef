@@ -4,9 +4,16 @@
 #include <list>
 #include <stack>
 #include <cstdio>
-#include <unordered_map>
+//#include <unordered_map>
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
+#include SIZE 10001
+vector <int> graph[SIZE];
+int product[SIZE];
+int parent[SIZE];
+int visited[SIZE];
+int minSubtree[SIZE][102];
+
 
 using namespace std;
 
