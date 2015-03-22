@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <cstdio>
 #include <unordered_map>
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
@@ -58,9 +59,10 @@ public:
 int main()
 {
     int N, K, B, i, m, n, x, y, Nq;
-
-    cin >> N >> K;
-    cin >> B;
+    scanf("%d %d",&N,&K);
+//    cin >> N >> K;
+    scanf("%d",&B);
+//    cin >> B;
 
     Graph myGraph (N, K);
 
@@ -68,31 +70,36 @@ int main()
 
     while (i--)
     {
-        cin >> x >> y;
+	scanf("%d %d",&x,&y);
+        //cin >> x >> y;
         myGraph.addEdge (x, y);
     }
 
     /* store list of cities for each product */
-    unordered_map <int, vector <int> > pCities;
+//    unordered_map <int, vector <int> > pCities;
     for (i = 0; i < N; i++)
     {
-        cin >> m;
+//        cin >> m;
+	scanf("%d",&m);
 	myGraph.setProduct(i+1,m);
 
 	/* add city to list for the product */
-        pCities[m].push_back (i + 1);
+	//      pCities[m].push_back (i + 1);
     }
 
     myGraph.DFS (B);		/* DFS from capital */
 
     myGraph.DFS2();		/* 2nd DFS */
 
-    cin >> Nq;			/* no of queries */
+//    cin >> Nq;			/* no of queries */
+    scanf("%d",&Nq);
 
     for(i=0; i<Nq; i++)
     {
-	cin >> m >> n;
-	cout << myGraph.getMinCity(m,n) << endl;
+	scanf("%d %d",&m,&n);
+	//cin >> m >> n;
+	printf("%d\n",myGraph.getMinCity(m,n));
+	//cout << myGraph.getMinCity(m,n) << endl;
     }
 }
 
@@ -281,12 +288,13 @@ void Graph::initMinSubtree()
     minSubtree.resize(nodeNum); //at() ??
 }
 
+/*
 void Graph::printVisited ()
 {
     for (int i = 1; i <= nodeNum; i++)
         cout << "v[" << i << "]: "
              << (visited[i - 1] ? "+" : "-") << endl;
-}
+	     }*/
 
 bool Graph::ifVisited (int node)
 {
