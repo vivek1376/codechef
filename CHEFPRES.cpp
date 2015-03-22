@@ -24,54 +24,47 @@ public:
 
 class Graph {
 private:
-    int V;			/* no of nodes */
-    vector <list <Node> > g;	// adjacency list representation
-    unordered_map <int, vector <bool> > visited; /* each element stores a
-						    particular DFS instance
-						    result from a particular 
-						    root node */
-    unordered_map <int, vector <int> > distance; /* distances from the root
-						    node */
-    unordered_map <int, unordered_map <int, int> > parent; /* store parent node
-							      for each DFS instance
-							      from a particular root 
-							      node */
+    int nodeNum; 		/* no. of nodes */
+    int prNum;			/* no. of products */
+    int root;			/* root node */
+    
+    vector <list <Node> > graph;	/* adjacency list representation */
+    unordered_map <int ,int> cProduct;    /* map city with product */
+    vector <bool> visited;		/* stores explored nodes */
+    unordered_map <int, int> parent;    /* stores parent nodes */
+    vector <unordered_map <int, int> > minSubtree;    /* store min node in subtree 
+							 for a paticular product */
+    vector <unordered_map <int, int> > minCity; /* final answer */
 
-    /* store min node in subtree having product F(i)=p (under
-       a particular root node) */
-    unordered_map <int, vector <unordered_map <int , int > > > minSubtree;
-
-    /* map city with product */
-    unordered_map <int ,int> cProduct;
 public:
-    Graph (int V);
-    void DFS (int v);
-    int returnCapacity();
+    Graph (int nodeNum, int prNum);
     void addEdge (int v, int w);
-    int getMinSubtree(int root, int v);
+    void setProduct(int node, int p);
     vector <list <Node> >::reference getElement (int n);
-    void markVisited (int v, int node);
-    void setDistance (int v, int w , int dist);
-    void setMinSubtree (int root, int v);
-    int getDistance (int v, int w);
-    int getParent (int v, int w);
-    void initDistance (int v);
-    void initMinStree(int v);
-    bool ifVisited (int v, int node);
-    void printVisited (int v);
-    void printDistances (int v);
-    void printPath (int v, int d);
-    void setProduct(int v, int p);
-    list <Node>::iterator returnList (int node);
+    void initVisited();
+    void markVisited (int node);
+    bool ifVisited (int node);
+    int getParent (int node);
+    void printVisited ();
+    void DFS (int root);
+    void DFS2();
+    void initMinCity();
+    void setMinCity(int city, int pr, int minCity);
+    int getMinCity (int city, int pr);
+    void initMinSubtree();
+    int getMinSubtree(int city, int pr);
+    void setMinSubtree (int n);
+    void printPath (int node);
 };
 
 int main()
 {
     int N, K, B, i, m, n, x, y, Nq;
+
     cin >> N >> K;
     cin >> B;
 
-    Graph myGraph (N);
+    Graph myGraph (N, K);
 
     i = N - 1;
 
@@ -81,126 +74,253 @@ int main()
         myGraph.addEdge (x, y);
     }
 
-    //unordered_map <int, int> F;
+    /* store list of cities for each product */
     unordered_map <int, vector <int> > pCities;
     for (i = 0; i < N; i++)
     {
         cin >> m;
 	myGraph.setProduct(i+1,m);
-        //F[i + 1] = m;
 
-	/* store list of cities for each product */
+	/* add city to list for the product */
         pCities[m].push_back (i + 1);
     }
 
-    cin >> Nq;			/* no of queries */
-
     myGraph.DFS (B);		/* DFS from capital */
 
-    cout<<"dp"<<myGraph.getMinSubtree(B,7)<<endl;
-    for (i = 0; i < Nq; i++)
+    myGraph.DFS2();		/* 2nd DFS */
+
+    cin >> Nq;			/* no of queries */
+
+    for(i=0; i<Nq; i++)
     {
-        cin >> m >> n;
-
-        /* no city */
-        if (pCities.find (n) == pCities.end())
-        {
-            cout << "-1" << endl;
-            continue;
-        }
-        else if (pCities[n].size() == 1)
-        {   /* product found in only one city */
-            cout << pCities[n][0] << endl;
-            continue;
-        }
-        // if own city ??
-
-        /* multiple city choices */
-        myGraph.DFS (m);		/* DFS from chef's city */
-
-        int d,
-            p = numeric_limits<int>::min(),
-            maxCityD = numeric_limits<int>::min(),
-            minL = numeric_limits<int>::max(),
-            maxCity = numeric_limits<int>::max();
-
-        /* iterate all product cities */
-        for (vector<int>::iterator iVec = pCities[n].begin();
-                iVec != pCities[n].end(); ++iVec)
-        {
-            p = -1, d = *iVec;
-            minL = numeric_limits<int>::max(); /* initialize */
-            minL = MIN (minL, myGraph.getDistance (B, d));
-            while (p != m)
-            {
-                p = myGraph.getParent (m, d);
-                d = p;
-                minL = MIN (minL, myGraph.getDistance (B, d));
-            }
-
-            /* max city */
-            if (minL > maxCityD)
-            {
-                maxCityD = minL;
-                maxCity = *iVec;
-            }
-            else if (maxCityD == minL)
-                maxCity = MIN (maxCity, *iVec);
-        }
-        cout << maxCity << endl; //??OK
+	cin >> m >> n;
+	cout << myGraph.getMinCity(m,n) << endl;
     }
 }
 
 Node::Node()
 {
-    this->visited = 0;
+    visited = 0;
 }
 
-int Graph::getParent (int v, int w)
+int Graph::getParent (int node)
 {
-    return this->parent[v][w];
+    return parent[node];
 }
 
-void Graph::printPath (int v, int d)
-{
-    /* add checking */
-    int p = -1;
 
-    cout << "path: " << d;
-    while (p != v)
-    {
-        p = this->parent[v][d];
-        d = p;
-        cout << " " << d;
-    }
-    cout << endl;
-}
-
-Graph::Graph (int V)
+Graph::Graph (int nodeNum, int prNum)
 {
-    this->g.resize (V);
-    this->V = V;
-}
-
-int Graph::returnCapacity()
-{
-    return this->g.size();
-}
-
-vector <list <Node> >::reference Graph::getElement (int n)
-{
-    return this->g[n - 1];
+    this->nodeNum = nodeNum;
+    this->prNum=prNum;
+    graph.resize (nodeNum);
 }
 
 void Graph::addEdge (int v, int w)
 {
     Node n;
+
     n.setVal (w);
-    this->getElement (v).push_back (n);
+    getElement (v).push_back (n);
 
     /* bidirectional edge */
     n.setVal (v);
-    this->getElement (w).push_back (n);
+    getElement (w).push_back (n);
+}
+
+vector <list <Node> >::reference Graph::getElement (int n)
+{
+    return graph[n - 1];
+}
+
+
+void Graph::setMinCity (int city, int pr, int minCity)
+{
+    this->minCity[city-1][pr]=minCity;
+} 
+
+int Graph::getMinCity (int city, int pr)
+{
+    if (minCity[city-1].find(pr)==minCity[city-1].end())
+	return -1;
+    else
+	return minCity[city-1][pr];
+}
+
+void Graph::DFS2()
+{
+    int i, w, minS;
+
+    /* clear visited array */
+    initVisited();
+
+    initMinCity();
+
+    stack <int> S;		/* S will hold list of unexplored nodes */
+
+    markVisited (root);
+
+    S.push(root);
+
+    /* for root */
+    for(i=1; i<=prNum; i++)
+	setMinCity(root,i,getMinSubtree(root,i));
+    
+    list<Node>::iterator iList;
+
+    while (!S.empty())
+    {
+	w=S.top();
+	S.pop();
+
+	for(iList=getElement(w).begin(); iList!=getElement(w).end(); ++iList)
+	{
+	    if (ifVisited(iList->getVal())==false)
+	    {
+		markVisited(iList->getVal());
+		S.push(iList->getVal());
+	    
+		for (i=1; i<=prNum; i++)
+		{
+		    minS=getMinSubtree(iList->getVal(),i);
+		    
+		    (minS != -1)?setMinCity(iList->getVal(), i, minS):
+			setMinCity(iList->getVal(), i,
+				   getMinCity(getParent(iList->getVal()),i));
+//				   minCity[getParent(iList->getVal())-1][i]);
+//				   getMinSubtree(getParent(iList->getVal()), i));
+		}
+	    }
+	}
+    }
+}
+
+void Graph::DFS (int root)
+{
+    this->root=root;
+
+    /* clear visited array first */
+    initVisited();
+
+    initMinSubtree();
+
+    int w;
+
+    /* S will hold list of unexplored nodes */
+    stack <int> S;
+
+    /* mark root visited*/
+    markVisited (root);
+    parent[root] = root;	/* origin */
+    setMinSubtree(root);
+
+    /* push root node onto stack */
+    S.push(root);
+
+    list<Node>::iterator iList;
+
+    while (!S.empty())
+    {
+        w = S.top();
+        S.pop();
+
+        for (iList = getElement (w).begin();
+                iList != getElement (w).end(); ++iList)
+        {
+            if (ifVisited (iList->getVal()) == false)
+            {
+                markVisited (iList->getVal());
+                parent[iList->getVal()] = w;
+		setMinSubtree(iList->getVal());
+                S.push (iList->getVal());
+            }
+        }
+    }
+}
+
+void Graph::initVisited ()
+{
+    visited.resize(nodeNum);
+    visited.assign(nodeNum, false);
+}
+
+/* set 'city' as min node for product F(city) in city's parent nodes,
+   if city is smaller than those nodes' current minSubtree value for F(city) */
+void Graph::setMinSubtree (int city)
+{
+    int product=cProduct[city];
+    int tempCity=city;
+
+    /* update all the parent cities if 'city' is smaller than the
+       parent cities' minSubtree value (for 'product') */
+    while (tempCity!=root)
+    {
+	/* check if the parent node has a minSubtree value for 'product' */
+	if ((getMinSubtree(tempCity, product) == -1) ||
+	    (getMinSubtree(tempCity, product) > city))
+	    minSubtree[tempCity-1][product]=city;
+	    
+	tempCity=getParent(tempCity);
+    }
+    
+    /* for root */
+    if ((getMinSubtree(tempCity, product) == -1) ||
+	(getMinSubtree(tempCity, product) > city))
+	minSubtree[tempCity-1][product]=city;
+}
+
+int Graph::getMinSubtree (int city, int pr)
+{
+    if (minSubtree[city-1].find(pr)==minSubtree[city-1].end())
+	return -1;
+    else
+	return minSubtree[city-1][pr];
+}
+
+void Graph::initMinCity()
+{
+    minCity.resize(nodeNum);
+
+    int i;
+
+    /* initialise with -1 */
+/*    for(i=1; i<=nodeNum; i++)
+      minCity[i-1]=make_pair(i, -1);*/
+}
+
+void Graph::initMinSubtree()
+{
+    int i;
+
+    minSubtree.resize(nodeNum); //at() ??
+
+    /* for all  */
+/*    for(i=1; i<=nodeNum; i++)
+      minSubtree[i-1]=make_pair(i,-1);*/
+}
+
+void Graph::printVisited ()
+{
+    for (int i = 1; i <= nodeNum; i++)
+        cout << "v[" << i << "]: "
+             << (visited[i - 1] ? "+" : "-") << endl;
+}
+
+bool Graph::ifVisited (int node)
+{
+    return visited[node-1];
+}
+
+void Graph::markVisited (int node)
+{
+    /* check ?? */
+
+    visited[node - 1] = true;
+}
+
+int Node::getVal()
+{
+    return val;
 }
 
 void Node::setVal (int val)
@@ -208,167 +328,22 @@ void Node::setVal (int val)
     this->val = val;
 }
 
-int Graph::getMinSubtree(int root, int v)
+void Graph::setProduct(int node, int p)
 {
-    return this->minSubtree[root][v-1][this->cProduct[v]];
+    cProduct[node]=p;
 }
 
-void Graph::DFS (int v)
+void Graph::printPath (int node)
 {
-    /* important!! if DFS already run from this node, return */
-    if (this->visited.find (v) != this->visited.end()) 
-        return;
-    
-//    this->minSubtree.insert(make_pair(this->V,make_pair(
-    initMinStree(v);
+    /* add checking */
+    int p = -1;
 
-    /* clear visited array first */
-    this->visited.insert (make_pair (v, vector <bool> (this->V, false))); //check
-    int w, dist = 0;
-
-    initDistance (v);
-    stack <int> S;
-
-    /* mark v visited,
-       why not pushing into stack ?? */
-    this->markVisited (v, v);
-    this->parent[v][v] = v;	/* origin */
-    setMinSubtree(v, v); /* set */
-    this->setDistance (v, v, dist);
-
-    list<Node>::iterator iList;
-
-    /* push all nodes adjacent to v onto S */
-    for (iList = this->getElement (v).begin(), ++dist; /* increment dist by 1 */
-            iList != this->getElement (v).end(); ++iList)
+    cout << "path: " << node;
+    while (p != root)
     {
-        this->markVisited (v, iList->getVal());
-
-	// 'dist' distance from 'v'
-        this->setDistance (v, iList->getVal(), dist);
-	
-        this->parent[v][iList->getVal()] = v;
-	setMinSubtree(v,iList->getVal());
-        S.push (iList->getVal());
+        p = parent[node];
+        node = p;
+        cout << " " << node;
     }
-
-    // S contains list of unexplored nodes
-    while (!S.empty())
-    {
-        w = S.top();
-        S.pop();
-
-        dist = getDistance (v, w);	/* reset dist. OK?? */
-
-        for (iList = this->getElement (w).begin(), ++dist;
-                iList != this->getElement (w).end(); ++iList)
-        {
-            if (this->ifVisited (v, iList->getVal()) == false)
-            {
-                this->markVisited (v, iList->getVal());
-                this->setDistance (v, iList->getVal(), dist);
-                this->parent[v][iList->getVal()] = w;
-		setMinSubtree(v,iList->getVal());
-                S.push (iList->getVal());
-            }
-        }
-    }
-}
-
-int Graph::getDistance (int v, int w)
-{
-    return this->distance[v][w - 1]; /* at() ?? */
-}
-
-void Graph::setDistance (int v, int w, int dist)
-{
-    this->distance[v][w - 1] = dist;
-}
-
-/* set v as min node for product F(v) in v's parent nodes, if v is smaller
-   that those nodes' previous min value for F(v) */
-void Graph::setMinSubtree(int root, int v)
-{
-    int product=this->cProduct[v];
-    int city=v;
-
-    // update all the parent nodes if city v is smaller than the
-    // parent nodes' minSubtree value (for v's product)
-    while (this->parent[root][city]!=root)
-    {
-	/* check if the parent node has a minSubtree value for 'product' */
-	if(minSubtree[root][city-1].find(product)==
-	   minSubtree[root][city-1].end())
-	    this->minSubtree[root][city-1][product]=v;
-	else if (minSubtree[root][city-1][product] > v)
-	    this->minSubtree[root][city-1][product]=v;
-
-	/*	if (minSubtree[root][city-1].find(this->cProduct[city])==
-	    minSubtree[root][city-1].end())
-	    this->minSubtree[root][city-1][this->cProduct[city]]=v;
-	else if (minSubtree[root][city-1][this->cProduct[city]] > v)
-	this->minSubtree[root][city-1][this->cProduct[city]]=v;*/
-	
-	city=getParent(root,city);
-    }
-    
-    /* for root */
-    if (minSubtree[root][city-1].find(product)==
-	minSubtree[root][city-1].end())
-	this->minSubtree[root][city-1][product]=v;
-    else if (minSubtree[root][city-1][product] > v)
-	this->minSubtree[root][city-1][product]=v;
-}
-
-void Graph::setProduct(int v, int p)
-{
-    this->cProduct[v]=p;
-}
-
-void Graph::initMinStree(int v)
-{
-    this->minSubtree[v].resize(this->V); //at() ??
-}
-
-void Graph::initDistance (int v)
-{
-    this->distance[v].resize (this->V); /* here OK?? */
-    this->distance[v].assign (this->distance[v].size(), -1);
-}
-
-void Graph::printVisited (int v)
-{
-    for (int i = 1; i <= this->V; i++)
-        cout << "v[" << i << "]: "
-             << (this->visited[v][i - 1] ? "+" : "-") << endl;
-}
-
-void Graph::printDistances (int v)
-{
-    for (int i = 1; i <= this->V; i++)
-        cout << "d[" << i << "]: " << this->distance[v][i - 1] << endl;
-}
-
-bool Graph::ifVisited (int v, int node)
-{
-    return this->visited[v][node - 1]; /* correct behaviour if
-					v not present ??
-					use (at) ?? */
-}
-
-void Graph::markVisited (int v, int node)
-{
-    /* check ?? */
-
-    this->visited[v][node - 1] = true;
-}
-
-list <Node>::iterator Graph::returnList (int node)
-{
-    return this->g[node - 1].begin();
-}
-
-int Node::getVal()
-{
-    return this->val;
+    cout << endl;
 }
