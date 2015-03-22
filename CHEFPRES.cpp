@@ -1,9 +1,8 @@
-// vivek < vivek.1376(at)gmail.com >
+/* vivek < vivek.1376(at)gmail.com > */
 #include <iostream>
 #include <vector>
 #include <list>
 #include <stack>
-#include <limits>
 #include <unordered_map>
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
@@ -49,12 +48,11 @@ public:
     void DFS (int root);
     void DFS2();
     void initMinCity();
+    void initMinSubtree();
     void setMinCity(int city, int pr, int minCity);
     int getMinCity (int city, int pr);
-    void initMinSubtree();
     int getMinSubtree(int city, int pr);
     void setMinSubtree (int n);
-    void printPath (int node);
 };
 
 int main()
@@ -108,7 +106,6 @@ int Graph::getParent (int node)
     return parent[node];
 }
 
-
 Graph::Graph (int nodeNum, int prNum)
 {
     this->nodeNum = nodeNum;
@@ -132,7 +129,6 @@ vector <list <Node> >::reference Graph::getElement (int n)
 {
     return graph[n - 1];
 }
-
 
 void Graph::setMinCity (int city, int pr, int minCity)
 {
@@ -187,8 +183,6 @@ void Graph::DFS2()
 		    (minS != -1)?setMinCity(iList->getVal(), i, minS):
 			setMinCity(iList->getVal(), i,
 				   getMinCity(getParent(iList->getVal()),i));
-//				   minCity[getParent(iList->getVal())-1][i]);
-//				   getMinSubtree(getParent(iList->getVal()), i));
 		}
 	    }
 	}
@@ -280,23 +274,11 @@ int Graph::getMinSubtree (int city, int pr)
 void Graph::initMinCity()
 {
     minCity.resize(nodeNum);
-
-    int i;
-
-    /* initialise with -1 */
-/*    for(i=1; i<=nodeNum; i++)
-      minCity[i-1]=make_pair(i, -1);*/
 }
 
 void Graph::initMinSubtree()
 {
-    int i;
-
     minSubtree.resize(nodeNum); //at() ??
-
-    /* for all  */
-/*    for(i=1; i<=nodeNum; i++)
-      minSubtree[i-1]=make_pair(i,-1);*/
 }
 
 void Graph::printVisited ()
@@ -331,19 +313,4 @@ void Node::setVal (int val)
 void Graph::setProduct(int node, int p)
 {
     cProduct[node]=p;
-}
-
-void Graph::printPath (int node)
-{
-    /* add checking */
-    int p = -1;
-
-    cout << "path: " << node;
-    while (p != root)
-    {
-        p = parent[node];
-        node = p;
-        cout << " " << node;
-    }
-    cout << endl;
 }
