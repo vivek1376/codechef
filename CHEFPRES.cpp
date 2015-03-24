@@ -11,7 +11,7 @@ using namespace std;
 vector<int> graph[SIZE];
 int product[SIZE]={0};
 int parent[SIZE]={0};
-int minSubtree[SIZE][102]={{-1}};
+int minSubtree[SIZE][102]={{0}};
 int minCity[SIZE][102]={{0}};
 int root,k;
 
@@ -40,12 +40,14 @@ int main()
 	scanf("%d",&m);
 	product[i]=m;
     }
-
+//    minSubtree[2][1]=3;
+    //cout << minSubtree[8][4];//d    
     graphDFS (B);		/* DFS from capital */
-    cout << minSubtree[4][1];
-    return 0;
+//    cout << minSubtree[4][1];//d
+//    return 0;
     graphDFS2();		/* 2nd DFS */
-
+//    cout << minCity[2][1];
+//    return 0;
 //    cin >> Nq;			/* no of queries */
     scanf("%d",&Nq);
 
@@ -65,7 +67,7 @@ void graphDFS (int r)
 //    initVisited();
     int visited[SIZE]={0};
 
-    int w,i;
+    int w,i,child;
 
     /* S will hold list of unexplored nodes */
     stack <int> S;
@@ -73,12 +75,12 @@ void graphDFS (int r)
     /* mark root visited*/
     visited[root]=1;
     parent[root] = root;    /* origin */
+//    cout << "root" << root << endl;//d
     setMinSubtree(root);
 
     /* push root node onto stack */
     S.push(root);
 
-    int child;
     while (!S.empty())
     {
         w = S.top();
@@ -98,38 +100,9 @@ void graphDFS (int r)
     }
 }
 
-void setMinSubtree (int city)
-{
-    int pr=product[city];
-    int tempCity=city;
-
-    /* update all the parent cities if 'city' is smaller than the
-       parent cities' minSubtree value (for 'product') */
-    while (tempCity!=root)
-    {
-	/* check if the parent node has a minSubtree value for 'product' */
-	
-	if((minSubtree[tempCity][pr]==-1) ||
-	   minSubtree[tempCity][pr]>city)
-	    minSubtree[tempCity][pr]=city;
-
-	    tempCity=parent[tempCity];
-/*	if ((getMinSubtree(tempCity, product) == -1) ||
-	    (getMinSubtree(tempCity, product) > city))
-	    minSubtree[tempCity-1][product]=city;
-        
-	    tempCity=getParent(tempCity);*/
-    }
-    
-    /* for root */
-    if((minSubtree[tempCity][pr]==-1) ||
-       minSubtree[tempCity][pr]>city)
-	tempCity=parent[tempCity];
-}
-
 void graphDFS2()
 {
-    int i, w, minS;
+    int i,j, w, minS;
 
     /* clear visited array */
     int visited[SIZE]={0};
@@ -151,22 +124,57 @@ void graphDFS2()
 	w=S.top();
 	S.pop();
 
+//	if(w==2)
+//	    cout << "weeee" << endl;
+//	cout <<"p:"<<w<<endl;//d
 	for(i=0; i<graph[w].size(); i++)
 	{
 	    child=graph[w][i];
+//	    cout<<"ch: "<<child<<endl;//d
 	    if(!visited[child])
 	    {
 		visited[child]=1;
 		S.push(child);
 		
-		for(i=1; i<=k; i++)
+		for(j=1; j<=k; j++)
 		{
-		    minS=minSubtree[child][i];
-		    (minS!=-1)?minCity[child][i]=minS:
-			minCity[child][i]=
-			minSubtree[parent[child]][i];
+//		    cout<<"pp"<<j<<endl;//d
+		    minS=minSubtree[child][j];
+//		    cout <<"mins"<<minS<<endl;//d
+		    (minS!=0)?minCity[child][j]=minS:
+			minCity[child][j]=
+			minCity[parent[child]][j];
+//		    cout<<minCity[child][j]<<endl;//d
 		}
 	    }
 	}
     }
 }
+
+void setMinSubtree (int city)
+{
+    int pr=product[city];
+    int tempCity=city;
+
+    /* update all the parent cities if 'city' is smaller than the
+       parent cities' minSubtree value (for 'product') */
+    while (tempCity!=root)
+    {
+	/* check if the parent node has a minSubtree value for 'product' */
+	
+	if((minSubtree[tempCity][pr]==0) ||
+	   minSubtree[tempCity][pr]>city)
+
+	    minSubtree[tempCity][pr]=city;
+
+	tempCity=parent[tempCity];
+    }
+    
+    /* for root */
+    if((minSubtree[tempCity][pr]==0) ||
+       minSubtree[tempCity][pr]>city)
+    {
+	minSubtree[tempCity][pr]=city;
+    }
+}
+
