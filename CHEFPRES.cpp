@@ -55,7 +55,11 @@ int main()
     {
 	scanf("%d %d",&m,&n);
 	//cin >> m >> n;
-	printf("%d\n",minCity[m][n]);
+
+	if (minCity[m][n]==0)
+	    printf("-1\n");
+	else
+	    printf("%d\n",minCity[m][n]);
     }
 }
 
