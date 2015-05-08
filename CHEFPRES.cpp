@@ -40,7 +40,7 @@ int main()
 	scanf("%d",&m);
 	product[i]=m;
     }
-//    minSubtree[2][1]=3;
+//   minSubtree[2][1]=3;
     //cout << minSubtree[8][4];//d    
     graphDFS (B);		/* DFS from capital */
 //    cout << minSubtree[4][1];//d

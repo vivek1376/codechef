@@ -20,7 +20,7 @@ int main()
 	cin>>A[i++];
 
     // build map of element and list of positions for each element
-    unordered_map<int,vector<int> > occurences;
+    unordered_map<int, vector<int> > occurences;
     unordered_map<int, vector<int> >::iterator iMap;
 
     for(i=0;i<N;i++)
