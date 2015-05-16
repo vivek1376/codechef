@@ -23,6 +23,18 @@ int main()
 	findFactors(B);
 
 	flag=0;
+	
+	if(primeFactors.empty())
+	    flag=1;
+
+
+/*	printf("[ ");
+	for(vector<unsigned long long int>::iterator it=primeFactors.begin();
+	    it!=primeFactors.end();++it)
+	    printf("%llu ",*it);
+
+	    printf("]\n");*/
+	    
 	for(vector<unsigned long long int>::iterator it=primeFactors.begin();
 	    it!=primeFactors.end();++it)
 	    if(A%(*it)!=0)
@@ -42,9 +54,9 @@ int main()
 
 void findFactors(unsigned long long int num)
 {
-    unsigned long long int i=2, nRoot=sqrt(num)+1, lastFactor=0;
+    unsigned long long int i=2, nRoot=sqrt(num), lastFactor=0;
     
-    while(i<nRoot)
+    while(i<=nRoot)
     {
 	while(num%i==0)
 	{
@@ -59,3 +71,5 @@ void findFactors(unsigned long long int num)
 	i==2?(++i):i+=2;
     }
 }
+
+
