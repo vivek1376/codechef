@@ -11,17 +11,7 @@ using namespace std;
 
 int main()
 {
-/*    printf("size %d\n",sizeof(long long int));
-    long long int p,q,r; //d
-    p=MODBASE,q=MODBASE;
-    r=(p*q)%11;
-    printf("%lld\n",r);
-*/  
     long long int T,N,i,S[100002],setDiff=0,twoPower=1;
-/*    int ee=-7;
-    ee%=5;
-    printf("%d\n",ee);*/
-    //  return 0;
 
     /* no. of test cases */
     scanf("%lld",&T);
@@ -37,13 +27,6 @@ int main()
 	    scanf("%lld",&S[i]);
 	
 	sort(S,S+N);
-//	for(i=0;i<N;i++)
-//	    printf(">%ld\n",S[i]);
-
-//	setDiff=(S[0]-S[N-1])%MODBASE;
-//	(setDiff<0)?(setDiff+=MODBASE):setDiff;
-
-//	printf("setdiff: %d\n",setDiff);//d
 
 	for(i=0;i<N;i++)
 	{
@@ -55,11 +38,7 @@ int main()
 	    if (setDiff<0) setDiff += MODBASE;
 	}
 	
-//	(setDiff<0)?(setDiff+=MODBASE):setDiff;
-//	setDiff%=MODBASE;//d
-	    
 	printf("%lld\n",setDiff);
-//	fflush(stdin);//d
     }
 
     return 0;
