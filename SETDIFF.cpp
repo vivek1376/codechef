@@ -1,4 +1,7 @@
-//#include <iostream>
+/* AC
+   needed 64 bit variable, so used
+   long long int */
+
 #include <cstdio>
 #include <algorithm>
 
@@ -8,21 +11,30 @@ using namespace std;
 
 int main()
 {
-    long int T,N,i,S[100002],setDiff=0,twoPower=1;
+/*    printf("size %d\n",sizeof(long long int));
+    long long int p,q,r; //d
+    p=MODBASE,q=MODBASE;
+    r=(p*q)%11;
+    printf("%lld\n",r);
+*/  
+    long long int T,N,i,S[100002],setDiff=0,twoPower=1;
 /*    int ee=-7;
     ee%=5;
     printf("%d\n",ee);*/
     //  return 0;
-    scanf("%ld",&T);
+
+    /* no. of test cases */
+    scanf("%lld",&T);
     
     while(T--)
     {
 	twoPower=1,setDiff=0;
 
-	scanf("%ld",&N);
+	/* total no. of elements in S' */
+	scanf("%lld",&N);
 
 	for(i=0;i<N;i++)
-	    scanf("%ld",&S[i]);
+	    scanf("%lld",&S[i]);
 	
 	sort(S,S+N);
 //	for(i=0;i<N;i++)
@@ -46,7 +58,7 @@ int main()
 //	(setDiff<0)?(setDiff+=MODBASE):setDiff;
 //	setDiff%=MODBASE;//d
 	    
-	printf("%ld\n",setDiff);
+	printf("%lld\n",setDiff);
 //	fflush(stdin);//d
     }
 
