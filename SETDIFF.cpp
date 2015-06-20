@@ -11,8 +11,9 @@ using namespace std;
 
 int main()
 {
-    long long int T,N,i,S[100002],setDiff=0,twoPower=1;
-
+    long long int T,N,i,setDiff=0,twoPower=1;
+    long int S[100002];
+    
     /* no. of test cases */
     scanf("%lld",&T);
     
