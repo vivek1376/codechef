@@ -8,11 +8,10 @@ using namespace std;
 
 int main()
 {
-    //cout<<-1%3<<endl;//d
     long int T,N,i,S[100002],setDiff=0,twoPower=1;
-    //  int ee=1000000011;
-    //ee%=MODBASE;
-//    printf("%d",ee);
+/*    int ee=-7;
+    ee%=5;
+    printf("%d\n",ee);*/
     //  return 0;
     scanf("%ld",&T);
     
@@ -29,20 +28,26 @@ int main()
 //	for(i=0;i<N;i++)
 //	    printf(">%ld\n",S[i]);
 
-	setDiff=(S[0]-S[N-1])%MODBASE;
-	(setDiff<0)?(setDiff+=MODBASE):setDiff;
+//	setDiff=(S[0]-S[N-1])%MODBASE;
+//	(setDiff<0)?(setDiff+=MODBASE):setDiff;
 
-	for(i=1;i<N;i++)
+//	printf("setdiff: %d\n",setDiff);//d
+
+	for(i=0;i<N;i++)
 	{
-	    twoPower*=2;
-	    twoPower%=MODBASE;
-
 	    setDiff+=((S[i]*twoPower-S[N-1-i]*twoPower)%MODBASE);
 	    setDiff%=MODBASE;
-	    (setDiff<0)?(setDiff+=MODBASE):setDiff;
+
+	    twoPower=(twoPower*2)%MODBASE;
+	    
+	    if (setDiff<0) setDiff += MODBASE;
 	}
+	
+//	(setDiff<0)?(setDiff+=MODBASE):setDiff;
+//	setDiff%=MODBASE;//d
+	    
 	printf("%ld\n",setDiff);
-	fflush(stdin);
+//	fflush(stdin);//d
     }
 
     return 0;
