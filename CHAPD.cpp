@@ -1,4 +1,4 @@
-//AC: viewed editorial
+//AC: viewed editorial, changed recursive function to iterative
 
 #include <cstdio>
 #include <vector>
@@ -48,15 +48,19 @@ ullong findHCF(ullong a, ullong b)
 
 bool ifUniqueFactor(ullong a, ullong b)
 {
-    if (b==1)
+    /* initialise */
+    ullong h=0;
+
+    while(h!=1 && b!=1)
+    {
+	h=findHCF(a,b);
+	
+	b=b/h;
+    }
+
+    if(b==1)
 	return false;
-
-    ullong h;
-
-    h=findHCF(a,b);
-
+    
     if(h==1)
 	return true;
-    else
-	ifUniqueFactor(a,b/h);
 }
