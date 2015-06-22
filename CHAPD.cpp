@@ -1,75 +1,62 @@
-//#include <iostream>
+//AC: viewed editorial
+
 #include <cstdio>
 #include <vector>
 #include <cmath>
 
+typedef unsigned long long int ullong;
+
 using namespace std;
 
-void findFactors(unsigned long long int);
-vector <unsigned long long int> primeFactors;
-
+bool ifUniqueFactor(ullong a, ullong b);
+ullong findHCF(ullong a, ullong b);
+    
 int main()
 {
-//    cout<<sizeof(unsigned long long int);//d
     unsigned long long int T,A,B;
+//    printf("%lld\n",findHCF(100,1));
+    //  return 0;
     char flag=0;
+
     scanf("%llu",&T);
 
     while(T--)
     {
 	scanf("%llu %llu",&A,&B);
 	
-	primeFactors.clear();
-	findFactors(B);
-
-	flag=0;
-	
-	if(primeFactors.empty())
-	    flag=1;
-
-
-/*	printf("[ ");
-	for(vector<unsigned long long int>::iterator it=primeFactors.begin();
-	    it!=primeFactors.end();++it)
-	    printf("%llu ",*it);
-
-	    printf("]\n");*/
-	    
-	for(vector<unsigned long long int>::iterator it=primeFactors.begin();
-	    it!=primeFactors.end();++it)
-	    if(A%(*it)!=0)
-	    {
-		flag=1;
-		break;
-	    }
-
-	if (flag==1)
-	    printf("No\n");
-	else
+	if(!ifUniqueFactor(A,B))
 	    printf("Yes\n");
+	else
+	    printf("No\n");
     }
 
     return 0;
 }
 
-void findFactors(unsigned long long int num)
+ullong findHCF(ullong a, ullong b)
 {
-    unsigned long long int i=2, nRoot=sqrt(num), lastFactor=0;
-    
-    while(i<=nRoot)
-    {
-	while(num%i==0)
-	{
-	    num=num/i;
-	    if(i!=lastFactor)
-	    {
-		primeFactors.push_back(i);
-		lastFactor=i;
-	    }
-	}
+    ullong c;
 
-	i==2?(++i):i+=2;
+    while(c=a%b, c)
+    {
+	a=b;
+	b=c;
     }
+
+    return b;
 }
 
+bool ifUniqueFactor(ullong a, ullong b)
+{
+    if (b==1)
+	return false;
 
+    ullong h;
+
+    h=findHCF(a,b);
+
+    if(h==1)
+	return true;
+    else
+	ifUniqueFactor(a,b/h);
+}
